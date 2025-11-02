@@ -7,20 +7,29 @@ import './datesCards.scss';
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { A11y } from 'swiper/modules';
+import { SwiperRef } from 'swiper/react';
+import { Swiper as SwiperType } from 'swiper';
 import 'swiper/css';
 
 type DatesCardsProps = {
     isMobile?: boolean,
 }
 
+type DateList = {
+    id: number;
+    year: number;
+    description: string;
+    category: string;
+}
+
 export const DatesCards: React.FC<DatesCardsProps> = ({ isMobile }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
-    const [displayedDatesList, setDisplayedDatesList] = useState<any[]>([]);
+    const [displayedDatesList, setDisplayedDatesList] = useState<DateList[]>([]);
     const [canGoNext, setCanGoNext] = useState(false);
     const [canGoPrev, setCanGoPrev] = useState(false);
     const [displayedCategory, setDisplayedCategory] = useState('');
-    const swiperRef = useRef<any>(null);
+    const swiperRef = useRef<SwiperRef | null>(null);
     const { setMinYear, setMaxYear, currentCategory } = useCurrentCategory();
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -99,7 +108,7 @@ export const DatesCards: React.FC<DatesCardsProps> = ({ isMobile }) => {
         setIsAnimating(false);
     };
 
-    const updateYears = (datesList: any[]) => {
+    const updateYears = (datesList: DateList[]) => {
         if (datesList.length > 0) {
             const years = datesList.map(item => item.year);
             const minYear = Math.min(...years);
@@ -121,7 +130,7 @@ export const DatesCards: React.FC<DatesCardsProps> = ({ isMobile }) => {
         }
     };
 
-    const handleSlideChange = (swiper: any) => {
+    const handleSlideChange = (swiper: SwiperType) => {
         setCurrentSlide(swiper.activeIndex);
         setCanGoPrev(!swiper.isBeginning);
         setCanGoNext(!swiper.isEnd);

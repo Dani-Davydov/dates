@@ -5,7 +5,7 @@ import CurrentCategoryContextProvider from "../../contexts/currentDateCategoryCo
 import {DatesCards} from "../../components/datesCards/DatesCards";
 import {MobileYears} from "../../components/mobileComponents/mobileYears/MobileYears";
 
-export const MobileApp: React.FC = () => {
+export const MobileApp = () => {
     return (
         <div className="mobile-app">
             <CurrentCategoryContextProvider>

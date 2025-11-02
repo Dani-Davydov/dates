@@ -4,7 +4,7 @@ import React from "react";
 import './deskTop.scss'
 import {DatesCards} from "../../components/datesCards/DatesCards";
 
-const DesktopApp: React.FC = () => {
+const DesktopApp = () => {
     return (
         <div className="deskTop-app">
             <CurrentCategoryContextProvider>

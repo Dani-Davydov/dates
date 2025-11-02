@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, Dispatch, SetStateAction } from "react";
 
-interface CurrentElementContextType {
+type CurrentElementContextType = {
     currentCategory: string;
     setCurrentCategory: Dispatch<SetStateAction<string>>;
     minYear: number;

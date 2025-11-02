@@ -2,12 +2,12 @@ import React from "react";
 import "./maxAndMinYear.scss"
 import {useCurrentCategory} from "../../contexts/currentDateCategoryContext";
 
-type props = {
+type Props = {
     minYearRef: React.RefObject<HTMLDivElement | null>;
     maxYearRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export const MaxAndMinYear = ({minYearRef, maxYearRef}: props) => {
+export const MaxAndMinYear: React.FC<Props> = ({minYearRef, maxYearRef}) => {
     const { minYear, maxYear } = useCurrentCategory();
 
     return (

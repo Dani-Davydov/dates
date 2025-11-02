@@ -16,7 +16,7 @@ const slides: Slide[] = [
     { id: 6, text: 'Игры'}
 ];
 
-export const SimpleSwiper: React.FC = () => {
+export const SimpleSwiper = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const { setCurrentCategory } = useCurrentCategory();
 

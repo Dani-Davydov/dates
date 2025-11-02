@@ -13,14 +13,14 @@ const slides = [
     { id: 6, text: 'Игры'}
 ];
 
-export const CustomCircularSwiper: React.FC = () => {
+export const CustomCircularSwiper = () => {
     const { setCurrentCategory, minYear, maxYear } = useCurrentCategory();
     const [currentElement, setCurrentElement] = useState(0);
 
     const minYearRef = useRef<HTMLDivElement | null>(null);
     const maxYearRef = useRef<HTMLDivElement | null>(null);
-    const prevMinYearRef = useRef(minYear);
-    const prevMaxYearRef = useRef(maxYear);
+    const prevMinYearRef = useRef<number>(minYear);
+    const prevMaxYearRef = useRef<number>(maxYear);
 
     const totalSlides = slides.length;
     const rotationAngle = -currentElement * 60 + 300;
