@@ -1,0 +1,17 @@
+@use '../../styles/globals' as *;
+
+.mobile-app {
+  max-width: 320px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-lg $spacing-sm $spacing-xs $spacing-sm;
+
+  .title-of-page {
+    width: 100%;
+    margin-bottom: $font-size-xxl;
+    font-size: $font-size-lg;
+    font-weight: bold;
+    color: $text-color;
+  }
+}
