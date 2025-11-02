@@ -2,7 +2,7 @@
 
 .swiper-container {
   width: 100%;
-  margin-top: 50px; // 50px ниже заголовка вместо 225px
+  margin-top: 50px;
 }
 
 .custom-circular-swiper {
@@ -21,11 +21,14 @@
   }
 
   .circular-container {
-    position: relative;
+    position: absolute;
     width: 100%;
     height: 100%;
     transition: transform $transition-slow;
     transform-origin: center center;
+    top: 0;
+    left: 0;
+    z-index: 1;
 
     .circular-item {
       position: absolute;
@@ -40,8 +43,24 @@
         align-items: center;
         gap: $spacing-xs;
         transform-origin: center center;
-        transition: all $transition-fast;
         pointer-events: none;
+      }
+
+      &.active .inner-item {
+        transform: rotate(60deg)!important;
+      }
+
+      .category-text {
+        display: none;
+      }
+
+      &.active .category-text {
+        display: inline;
+        animation: 2s show ease;
+      }
+      @keyframes show {
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
 
       .dot {

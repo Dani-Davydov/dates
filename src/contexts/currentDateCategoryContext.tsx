@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, Dispatch, SetStateAction } from "react";
+import React, { createContext, useContext, useState, Dispatch, SetStateAction } from "react";
 
 type CurrentElementContextType = {
     currentCategory: string;

@@ -1,4 +1,4 @@
-import {CustomCircularSwiper} from "../../components/circleSwiper/Swiper";
+import {CustomCircularSwiper} from "../../components/timelineCircle/timeLineSwiper";
 import CurrentCategoryContextProvider from "../../contexts/currentDateCategoryContext";
 import React from "react";
 import './deskTop.scss'

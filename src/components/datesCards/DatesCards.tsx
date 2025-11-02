@@ -1,140 +1,106 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useCurrentCategory } from "../../contexts/currentDateCategoryContext";
-import historicalData from "../../dates.json";
 import { Card } from "./cards/Card";
-import { gsap } from 'gsap';
-import './datesCards.scss';
-import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { A11y } from 'swiper/modules';
 import { SwiperRef } from 'swiper/react';
 import { Swiper as SwiperType } from 'swiper';
 import 'swiper/css';
+import './datesCards.scss';
+import { useCategoryData } from "../../hooks/useCategoryData";
+import { useSwiperNavigation } from "../../hooks/useSwiperNavigation";
+import { useCategoryAnimation } from "../../hooks/useCategoryAnimation";
+import { useYearsManager } from "../../hooks/useYearsManager";
+import React from "react";
 
 type DatesCardsProps = {
-    isMobile?: boolean,
-}
-
-type DateList = {
-    id: number;
-    year: number;
-    description: string;
-    category: string;
+    isMobile?: boolean;
 }
 
 export const DatesCards: React.FC<DatesCardsProps> = ({ isMobile }) => {
-    const [currentSlide, setCurrentSlide] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
-    const [displayedDatesList, setDisplayedDatesList] = useState<DateList[]>([]);
-    const [canGoNext, setCanGoNext] = useState(false);
-    const [canGoPrev, setCanGoPrev] = useState(false);
-    const [displayedCategory, setDisplayedCategory] = useState('');
-    const swiperRef = useRef<SwiperRef | null>(null);
-    const { setMinYear, setMaxYear, currentCategory } = useCurrentCategory();
 
+    const { setMinYear, setMaxYear, currentCategory } = useCurrentCategory();
+    const swiperRef = useRef<SwiperRef>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const categoryTextRef = useRef<HTMLDivElement>(null);
 
-    const filteredDatesList = historicalData.historicalEvents.filter(
-        date => date.category === currentCategory
-    );
+    const {
+        displayedDatesList,
+        displayedCategory,
+        filteredDatesList,
+        updateDisplayedData,
+        shouldUpdateData
+    } = useCategoryData(currentCategory);
+
+    const {
+        canGoPrev,
+        canGoNext,
+        updateNavigationState,
+        handleSlideChange,
+        slideToStart,
+        slideNext,
+        slidePrev
+    } = useSwiperNavigation(swiperRef);
+
+    const { animateElements } = useCategoryAnimation();
+    const { updateYears } = useYearsManager(setMinYear, setMaxYear);
 
     useEffect(() => {
         if (displayedDatesList.length === 0 && filteredDatesList.length > 0) {
-            setDisplayedDatesList(filteredDatesList);
-            setDisplayedCategory(currentCategory);
+            updateDisplayedData(filteredDatesList, currentCategory);
             updateYears(filteredDatesList);
-            return;
         }
-
-        if (JSON.stringify(displayedDatesList) !== JSON.stringify(filteredDatesList)) {
-            handleCategoryChange();
-        }
-    }, [filteredDatesList]);
+    }, [displayedDatesList.length, filteredDatesList, currentCategory, updateDisplayedData, updateYears]);
 
     useEffect(() => {
-        updateNavigationState();
-    }, [currentSlide, displayedDatesList]);
-
-    const updateNavigationState = () => {
-        if (swiperRef.current) {
-            const swiper = swiperRef.current.swiper;
-            setCanGoPrev(!swiper.isBeginning);
-            setCanGoNext(!swiper.isEnd);
-        } else {
-            setCanGoPrev(currentSlide > 0);
-            setCanGoNext(currentSlide < displayedDatesList.length - 1);
+        if (shouldUpdateData()) {
+            handleCategoryChange();
         }
-    };
+    }, [filteredDatesList, shouldUpdateData]);
 
-    const handleCategoryChange = async () => {
-        if (isAnimating || !containerRef.current) return;
-
+    const handleCategoryChange = useCallback(async () => {
         setIsAnimating(true);
 
-        const elementsToAnimate = [containerRef.current];
-        if (isMobile && categoryTextRef.current) {
-            elementsToAnimate.push(categoryTextRef.current);
-        }
+        const elements = [containerRef.current, ...(isMobile ? [categoryTextRef.current] : [])];
+        const showAnimation = await animateElements(elements, isAnimating);
 
-        await gsap.to(elementsToAnimate, {
-            opacity: 0,
-            duration: 0.3,
-            ease: "power1.inOut",
-            stagger: 0.1
-        });
-
-        setCurrentSlide(0);
-        setDisplayedDatesList(filteredDatesList);
-        setDisplayedCategory(currentCategory);
+        updateDisplayedData(filteredDatesList, currentCategory);
         updateYears(filteredDatesList);
 
         await new Promise(resolve => requestAnimationFrame(resolve));
 
-        await gsap.to(elementsToAnimate, {
-            opacity: 1,
-            duration: 0.3,
-            ease: "power1.inOut",
-            stagger: 0.1
-        });
+        if (showAnimation) {
+            await showAnimation();
+        }
 
-        setTimeout(() => {
-            if (swiperRef.current) {
-                swiperRef.current.swiper.slideTo(0, 0);
-            }
-            updateNavigationState();
-        }, 100);
+        slideToStart();
+        updateNavigationState();
 
         setIsAnimating(false);
-    };
+    }, [
+        isMobile,
+        animateElements,
+        isAnimating,
+        updateDisplayedData,
+        filteredDatesList,
+        currentCategory,
+        updateYears,
+        slideToStart,
+        updateNavigationState
+    ]);
 
-    const updateYears = (datesList: DateList[]) => {
-        if (datesList.length > 0) {
-            const years = datesList.map(item => item.year);
-            const minYear = Math.min(...years);
-            const maxYear = Math.max(...years);
-            setMinYear(minYear);
-            setMaxYear(maxYear);
-        }
-    };
+    const handleNext = useCallback(() => {
+        slideNext();
+    }, [slideNext]);
 
-    const handleNext = () => {
-        if (swiperRef.current && canGoNext) {
-            swiperRef.current.swiper.slideNext();
-        }
-    };
+    const handlePrev = useCallback(() => {
+        slidePrev();
+    }, [slidePrev]);
 
-    const handlePrev = () => {
-        if (swiperRef.current && canGoPrev) {
-            swiperRef.current.swiper.slidePrev();
-        }
-    };
-
-    const handleSlideChange = (swiper: SwiperType) => {
-        setCurrentSlide(swiper.activeIndex);
-        setCanGoPrev(!swiper.isBeginning);
-        setCanGoNext(!swiper.isEnd);
-    };
+    const handleSwiperSlideChange = useCallback((swiper: SwiperType) => {
+        handleSlideChange(swiper);
+    }, [handleSlideChange]);
 
     return (
         <div className="container">
@@ -156,7 +122,6 @@ export const DatesCards: React.FC<DatesCardsProps> = ({ isMobile }) => {
                         {'<'}
                     </button>
                 </div>
-
                 <Swiper
                     ref={swiperRef}
                     modules={[A11y]}
@@ -164,7 +129,7 @@ export const DatesCards: React.FC<DatesCardsProps> = ({ isMobile }) => {
                     slidesPerView={"auto"}
                     centeredSlides={false}
                     initialSlide={0}
-                    onSlideChange={handleSlideChange}
+                    onSlideChange={handleSwiperSlideChange}
                     onInit={updateNavigationState}
                     watchOverflow={true}
                     resistance={true}
@@ -173,12 +138,6 @@ export const DatesCards: React.FC<DatesCardsProps> = ({ isMobile }) => {
                         320: {
                             slidesPerView: "auto",
                             spaceBetween: 20,
-                            centeredSlides: false,
-                            watchOverflow: true,
-                        },
-                        768: {
-                            slidesPerView: "auto",
-                            spaceBetween: 40,
                             centeredSlides: false,
                             watchOverflow: true,
                         },
@@ -199,7 +158,6 @@ export const DatesCards: React.FC<DatesCardsProps> = ({ isMobile }) => {
                         </SwiperSlide>
                     ))}
                 </Swiper>
-
                 <div className={`nav-element ${!canGoNext ? 'nav-element--hidden' : ''}`}>
                     <button
                         disabled={!canGoNext || isAnimating}
