@@ -1,29 +1,19 @@
-import React, { useState } from 'react';
-import './App.scss';
+import React from "react";
+import DesktopApp from "./adaptiveApp/desktopApp/DesktopApp";
+import {MobileApp} from "./adaptiveApp/mobileApp/MobileApp";
 
 interface AppProps {
     title?: string;
 }
 
-const App: React.FC<AppProps> = ({ title = "Hello React with SCSS!" }) => {
+const App: React.FC<AppProps> = () => {
+    const isMobile = window.screen.width <= 430;
+
     return (
         <div className="app">
-            <h1>{title}</h1>
-            <p>SCSS + TypeScript работает! 🎉</p>
-            <Counter />
-        </div>
-    );
-};
-
-const Counter: React.FC = () => {
-    const [count, setCount] = useState<number>(0);
-
-    return (
-        <div className="counter">
-            <p>Count: {count}</p>
-            <button onClick={() => setCount(count + 1)}>
-                Increment
-            </button>
+            {isMobile ? (
+                <MobileApp/>
+            ): <DesktopApp/>}
         </div>
     );
 };

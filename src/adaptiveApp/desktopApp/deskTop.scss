@@ -1,0 +1,82 @@
+@use '../../styles/globals' as *;
+
+.deskTop-app {
+  @include flex-center;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  padding: 170px 160px 100px 320px;
+  position: relative;
+
+  .title-of-page {
+    position: absolute;
+    padding-left: 75px;
+    left: $spacing-xxl * 2;
+    top: 110px;
+    font-size: $font-size-xxl;
+    font-weight: $font-weight-bold;
+    color: $primary-color;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 7px;
+      @include gradient-border;
+    }
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: $border-color;
+    z-index: $z-index-high;
+  }
+
+  &::before {
+    left: $spacing-xxl * 2;
+  }
+
+  &::after {
+    right: $spacing-xxl;
+  }
+
+  .borders {
+    position: absolute;
+    top: 0;
+    left: $spacing-xxl * 2;
+    right: $spacing-xxl;
+    height: 100%;
+    pointer-events: none;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      background: $border-color;
+      z-index: $z-index-base;
+    }
+
+    &::before {
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 1px;
+      transform: translateX(-50%);
+    }
+
+    &::after {
+      left: 0;
+      right: 0;
+      top: 45%;
+      height: 1px;
+      transform: translateY(-50%);
+    }
+  }
+}

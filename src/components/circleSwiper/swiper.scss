@@ -1,0 +1,122 @@
+@use '../../styles/globals' as *;
+
+.swiper-container {
+  width: 100%;
+  margin-top: 50px; // 50px ниже заголовка вместо 225px
+}
+
+.custom-circular-swiper {
+  position: relative;
+  width: 500px;
+  height: 500px;
+  margin: 50px auto 0;
+
+  .circle-background {
+    @include absolute-center;
+    width: 537px;
+    height: 537px;
+    border: 2px solid $border-color;
+    border-radius: $border-radius-full;
+    pointer-events: none;
+  }
+
+  .circular-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform $transition-slow;
+    transform-origin: center center;
+
+    .circular-item {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-origin: center center;
+      cursor: pointer;
+      transition: all $transition-normal;
+
+      .inner-item {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        transform-origin: center center;
+        transition: all $transition-fast;
+        pointer-events: none;
+      }
+
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: $border-radius-full;
+        background: $primary-color;
+        transition: all $transition-normal;
+        @include flex-center;
+        pointer-events: auto;
+      }
+
+      .item-content {
+        display: none;
+        color: $primary-color;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-bold;
+      }
+
+      .category-text {
+        opacity: 0;
+        transition: opacity $transition-fast, transform $transition-fast;
+        transform: translateX(6px);
+        color: $primary-color;
+        white-space: nowrap;
+        pointer-events: none;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-bold;
+      }
+
+      &:hover,
+      &.active {
+        .dot {
+          width: 56px;
+          height: 56px;
+          background: $background-light;
+          border: 1px solid rgba($primary-color, 0.7);
+        }
+
+        .item-content {
+          display: block;
+        }
+      }
+
+      &.active .category-text {
+        opacity: 1;
+        transform: translateX(12px);
+      }
+    }
+  }
+}
+
+.navigation {
+  margin-left: $spacing-xl;
+  max-width: 120px;
+  gap: $spacing-sm;
+  @include flex-column;
+
+  .current-slide {
+    color: $primary-color;
+  }
+
+  .buttons {
+    display: flex;
+    gap: $spacing-sm;
+
+    .switch-date-btn {
+      @include circular-button;
+      width: $spacing-md+10;
+      height: $spacing-md+10;
+      border: 1px solid $primary-color;
+      border-radius: $border-radius-circle;
+      background: none;
+      font-size: 24px;
+      font-weight: 300;
+    }
+  }
+}
